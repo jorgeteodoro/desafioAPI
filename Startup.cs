@@ -12,6 +12,10 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using DesafioAPISiumulacao.Data;
 using DesafioAPISimulacao.Application;
+using FluentMigrator.Runner;
+using System.Data;
+using System.Data.SqlClient;
+using DesafioAPISimulacao.MigrateDataBase;
 
 namespace DesafioAPISimulacao.API
 {
@@ -90,17 +94,18 @@ namespace DesafioAPISimulacao.API
             services.AddInfrastructureDI();
             Configuration.AddInfrastructureMapper();
             services.AddApplicationDI();
-            //services.AddAutoMapper(typeof(Startup));
-           
 
-            //services.AddSingleton<ServiceException>();
 
-            //var securityPasswordConfigurations = new SecurityPasswordConfigurations();
-            //new ConfigureFromConfigurationOptions<SecurityPasswordConfigurations>(Configuration.GetSection("SecurityPasswordConfigurations")).Configure(securityPasswordConfigurations);
-            //services.AddSingleton(securityPasswordConfigurations);
+            var builder = WebApplication.CreateBuilder();
 
-            //services.AddHealthChecks().AddCheck<HealthCheckController>("health_check");
-            //services.AddHostedService<Worker>();
+            builder.Services.AddScoped<IDbConnection>(_ => new SqlConnection(builder.Configuration.GetConnectionString("Connection")));
+            builder.Services.AddControllers();
+            builder.Services.AddFluentMigratorCore()
+                .ConfigureRunner(rb => rb
+                    .AddSqlServer()
+                    .WithGlobalConnectionString(builder.Configuration.GetConnectionString("Connection"))
+                    .ScanIn(typeof(CreateDataBaseDesafioAPI).Assembly).For.Migrations());
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP Request pipeline.
