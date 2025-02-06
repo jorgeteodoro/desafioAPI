@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35707.178 d17.12
+VisualStudioVersion = 17.12.35707.178
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesafioAPISimulacao", "DesafioAPISimulacao.csproj", "{34D6B5FD-024C-4B88-ABDC-F860BBF8186E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DesafioAPISimulacao.API", "DesafioAPISimulacao.API.csproj", "{34D6B5FD-024C-4B88-ABDC-F860BBF8186E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Consumers", "Consumers", "{7C80AE75-A50B-4D86-ADE0-8630DE0C0C46}"
 EndProject
