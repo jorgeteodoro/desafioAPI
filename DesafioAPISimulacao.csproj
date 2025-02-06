@@ -17,4 +17,8 @@
     <ProjectReference Include="..\DesafioAPISimulacao.Domain\DesafioAPISimulacao.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DataBase\" />
+  </ItemGroup>
+
 </Project>

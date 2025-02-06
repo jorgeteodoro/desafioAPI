@@ -9,8 +9,6 @@ using System.Reflection;
 
 namespace DesafioAPISimulacao.API.Contract
 {
-    [Route("[controller]")]
-    //[Authorize("Bearer")]
     [AllowAnonymous]
     public abstract class ServiceBaseController<TEntity> : ControllerBase where TEntity : BaseEntity
     {
@@ -24,7 +22,6 @@ namespace DesafioAPISimulacao.API.Contract
             _serviceBase = serviceBase;
         }
 
-        [HttpPost]
         public virtual async Task<ResultRequest> Insert([FromBody] TEntity entity)
         {
             try

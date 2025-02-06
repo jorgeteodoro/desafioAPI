@@ -9,6 +9,7 @@ using System.Transactions;
 
 namespace DesafioAPISimulacao.API.Controllers
 {
+    [ApiController]
     public class ProposalController : ServiceBaseController<ProposalEntity>
     {
         private readonly ProposalService _proposalService;
@@ -21,8 +22,15 @@ namespace DesafioAPISimulacao.API.Controllers
             _paymentFlowSummaryService = (PaymentFlowSummaryService)serviceBase1;
         }
 
-        [HttpPost]
+        [NonAction]
+        public ObjectResult SetError(Exception e)
+        {
+            return StatusCode(500, e.Message);
+        }
+
+       
         [Route("/api/loans/simulate")]
+        [HttpPost]
         public override async Task<ResultRequest> Insert([FromBody] ProposalEntity proposalEntity)
         {
             try
@@ -38,21 +46,13 @@ namespace DesafioAPISimulacao.API.Controllers
 
                 // }
                 PaymentModel paymentModel = calculateInterest(proposalEntity);
-                double totalInterest = 0;
-                double monthlyPayment = 0;
-                double totalPayment = 0;
-
-                double.TryParse(paymentModel.totalInterest, out totalInterest);
-                double.TryParse(paymentModel.monthlyPayment, out monthlyPayment);
-                double.TryParse(paymentModel.totalPayment, out totalPayment);
-
 
                 int savedId = await _paymentFlowSummaryService.Insert(new PaymentFlowSummaryEntity
                 {
                     IdProposal = idProposal,
-                    TotalInterest = totalInterest,
-                    MonthlyPayment =monthlyPayment,
-                    TotalPayment = totalPayment
+                    TotalInterest = paymentModel.totalInterest,
+                    MonthlyPayment = paymentModel.monthlyPayment,
+                    TotalPayment = paymentModel.totalPayment
                 });
 
                 if (savedId > 0)
@@ -67,7 +67,7 @@ namespace DesafioAPISimulacao.API.Controllers
                 return new ResultRequest(false, ex);
             }
         }
-
+        [NonAction]
         private PaymentModel calculateInterest(ProposalEntity proposalEntity)
         {
 
@@ -85,13 +85,13 @@ namespace DesafioAPISimulacao.API.Controllers
 
             return new PaymentModel
             {
-                monthlyPayment = ValueAsString(monthlyPayment, 2),
-                totalInterest = ValueAsString(totalInterest, 2),
-                totalPayment = ValueAsString(totalPayment, 2),
+                monthlyPayment = monthlyPayment,
+                totalInterest = totalInterest,
+                totalPayment = totalPayment,
                 paymentSchedule = calculateSchedule(numberofMonths, interest, monthlyPayment, totalPayment, totalInterest, proposalEntity.LoanAmmount)
             };
         }
-
+        [NonAction]
         private List<PaymentSchedule> calculateSchedule(int numberofMonths, double interest, double monthlyPayment, double totalPayment, double totalInterest, double loanAmmount)
         {
             double totalPaymentMonthly = 0;
@@ -107,10 +107,10 @@ namespace DesafioAPISimulacao.API.Controllers
 
                 paymentSchedules.Add(new PaymentSchedule()
                 {
-                    interest = ValueAsString((loanAmmount * (interest / 12)), 2),
+                    interest = (loanAmmount * (interest / 12)),
                     month = parcela,
-                    balance = ValueAsString(balance, 2),
-                    principal = ValueAsString((totalPaymentMonthly - (loanAmmount * (interest / 12))), 2)
+                    balance =balance,
+                    principal = (totalPaymentMonthly - (loanAmmount * (interest / 12)))
                 });
             }
 
@@ -121,10 +121,6 @@ namespace DesafioAPISimulacao.API.Controllers
             return paymentSchedules;
         }
 
-        public string ValueAsString(double value, int decimalPlaces)
-        {
-            return value.ToString($"F{decimalPlaces}");
-        }
 
     }
 }
